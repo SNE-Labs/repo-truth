@@ -46,17 +46,37 @@ Or from inside a local clone whose `origin` points to GitHub:
 npx github:SNE-Labs/repo-truth scan .
 ```
 
+`.` means **the current Git clone**. Running it from a directory with no GitHub `origin` is intentionally rejected; pass `owner/repo` explicitly instead.
+
+For private repositories, repo-truth resolves authentication in this order:
+
+1. `GITHUB_TOKEN`
+2. `GH_TOKEN`
+3. the current authenticated GitHub CLI session via `gh auth token`
+4. unauthenticated public GitHub access
+
+So a private local clone normally only needs:
+
+```bash
+gh auth login
+npx github:SNE-Labs/repo-truth scan .
+```
+
+The token is used in-memory for GitHub API requests and is not written by repo-truth.
+
 GitHub URLs are accepted too:
 
 ```bash
 npx github:SNE-Labs/repo-truth scan https://github.com/owner/repo
 ```
 
-For higher GitHub API limits or private repositories:
+You can still provide a token explicitly:
 
 ```bash
 GITHUB_TOKEN=... npx github:SNE-Labs/repo-truth scan .
 ```
+
+If a repository is private and no token/session is available, repo-truth reports an authentication-specific error instead of surfacing GitHub's ambiguous raw 404.
 
 ## 10-second demo
 
