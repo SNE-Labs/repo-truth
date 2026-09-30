@@ -1,4 +1,5 @@
-import { GitHubReader, parseRepositoryName } from "./github-reader.mjs";
+import { GitHubReader } from "./github-reader.mjs";
+import { resolveRepositoryTarget } from "./repository-target.mjs";
 import { explainIssue, readyIssues, scanRepository } from "./scan.mjs";
 
 function usage() {
@@ -7,6 +8,8 @@ function usage() {
     "",
     "Usage:",
     "  repo-truth scan owner/repo [--limit 200] [--json]",
+    "  repo-truth scan . [--limit 200] [--json]",
+    "  repo-truth scan https://github.com/owner/repo [--limit 200] [--json]",
     "  repo-truth next owner/repo [--limit 200] [--json]",
     "  repo-truth explain owner/repo#42 [--limit 200] [--json]",
     "",
@@ -40,12 +43,19 @@ function truthLine(counts, key) {
 
 function formatScan(report) {
   const counts = report.summary.truth;
+  const coverage = report.source.coverage ?? {};
+  const issueWindow = String(coverage.observed_issue_roots ?? report.tasks.length) +
+    " issue roots observed" + (coverage.issues_truncated ? " · truncated" : "");
+  const pullWindow = String(coverage.observed_pull_requests ?? 0) +
+    " pull requests observed" + (coverage.pulls_truncated ? " · truncated" : "");
   return [
     "repo-truth · " + report.repository,
     "",
-    "GitHub",
-    "  " + report.summary.open_issues + " open issues",
-    "  " + report.summary.open_pull_requests + " open pull requests",
+    "Observed GitHub window",
+    "  " + issueWindow,
+    "  " + report.summary.open_issues_observed + " open issues in observed window",
+    "  " + pullWindow,
+    "  " + report.summary.open_pull_requests_observed + " open pull requests in observed window",
     "",
     "Repository truth",
     truthLine(counts, "live"),
@@ -62,7 +72,7 @@ function formatScan(report) {
     "  " + report.summary.open_issue_unresolved + " open issues truth unresolved",
     "",
     "OPEN ≠ ACTIONABLE",
-    report.summary.open_issues + " open issues → " + report.summary.agent_ready_issues + " verified agent-ready",
+    report.summary.open_issues_observed + " observed open issues → " + report.summary.agent_ready_issues + " verified agent-ready",
   ].join("\n");
 }
 
@@ -83,7 +93,7 @@ function formatNext(report) {
     "",
     ...rows.map(row => "#" + row.source_number + "  " + row.title),
     "",
-    rows.length + " of " + report.summary.open_issues + " open issues are verified ready.",
+    rows.length + " of " + report.summary.open_issues_observed + " observed open issues are verified ready.",
   ].join("\n");
 }
 
@@ -143,7 +153,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
   if (command === "explain") {
     const match = /^(.+)#(\d+)$/.exec(target);
     if (!match) throw new Error("explain_target_must_be_owner_slash_repo_hash_number");
-    const repo = parseRepositoryName(match[1]);
+    const repo = resolveRepositoryTarget(match[1]);
     const number = Number(match[2]);
     const report = await scanRepository(repo, { reader, limit: parsed.limit });
     const detail = explainIssue(report, number);
@@ -151,7 +161,7 @@ export async function main(argv = process.argv.slice(2), io = console) {
     return 0;
   }
 
-  const repo = parseRepositoryName(target);
+  const repo = resolveRepositoryTarget(target);
   const report = await scanRepository(repo, { reader, limit: parsed.limit });
   if (parsed.json) {
     io.log(JSON.stringify(command === "next" ? readyIssues(report) : report, null, 2));

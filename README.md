@@ -28,10 +28,22 @@ Until an npm package is published, run directly from GitHub:
 npx github:SNE-Labs/repo-truth scan owner/repo
 ```
 
+Or from inside a local clone whose `origin` points to GitHub:
+
+```bash
+npx github:SNE-Labs/repo-truth scan .
+```
+
+GitHub URLs are accepted too:
+
+```bash
+npx github:SNE-Labs/repo-truth scan https://github.com/owner/repo
+```
+
 For higher GitHub API limits or private repositories:
 
 ```bash
-GITHUB_TOKEN=... npx github:SNE-Labs/repo-truth scan owner/repo
+GITHUB_TOKEN=... npx github:SNE-Labs/repo-truth scan .
 ```
 
 ## 10-second demo
@@ -60,9 +72,11 @@ Example output:
 ```text
 repo-truth · owner/repo
 
-GitHub
-  47 open issues
-  11 open pull requests
+Observed GitHub window
+  50 issue roots observed · truncated
+  47 open issues in observed window
+  25 pull requests observed · truncated
+  11 open pull requests in observed window
 
 Repository truth
      8  LIVE
@@ -79,7 +93,7 @@ Agent eligibility
   32 open issues truth unresolved
 
 OPEN ≠ ACTIONABLE
-47 open issues → 8 verified agent-ready
+47 observed open issues → 8 verified agent-ready
 ```
 
 > The numbers above illustrate the output format; they are not a benchmark claim.
@@ -88,8 +102,11 @@ OPEN ≠ ACTIONABLE
 
 ```bash
 repo-truth scan owner/repo
-repo-truth next owner/repo
+repo-truth scan .
+repo-truth scan https://github.com/owner/repo
+repo-truth next .
 repo-truth explain owner/repo#42
+repo-truth explain .#42
 repo-truth scan owner/repo --json
 ```
 
@@ -97,7 +114,9 @@ repo-truth scan owner/repo --json
 
 ## Zero-config behavior
 
-The summary truth counts are scoped to **open Issue roots**. The full JSON also exposes `all_task_truth` across Issues, Pull Requests and derived checklist tasks.
+The summary truth counts are scoped to **open Issue roots inside the observed window**. The full JSON also exposes `all_task_truth` across Issues, Pull Requests and derived checklist tasks.
+
+`--limit` bounds observation; it is never presented as the repository's total backlog. The report exposes `source.coverage` with the requested limit, observed counts and explicit `*_truncated` flags.
 
 repo-truth can immediately prove relationships that are explicit in GitHub material, including:
 

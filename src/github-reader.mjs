@@ -70,18 +70,42 @@ export class GitHubReader {
     return body ? JSON.parse(body) : null;
   }
 
-  async paginate(path, limit = this.limit) {
+  async paginateWindow(path, limit = this.limit, { filter = () => true } = {}) {
     const bounded = boundedLimit(limit);
-    const rows = [];
-    const perPage = Math.min(100, bounded);
-    for (let page = 1; rows.length < bounded && page <= 10; page += 1) {
+    const accepted = [];
+    let sourceRows = 0;
+    let exhausted = false;
+    const perPage = Math.min(100, Math.max(1, bounded + 1));
+
+    for (let page = 1; page <= 10; page += 1) {
       const separator = path.includes("?") ? "&" : "?";
-      const batch = await this.request(path + separator + "per_page=" + perPage + "&page=" + page);
+      const batch = await this.request(
+        path + separator + "per_page=" + perPage + "&page=" + page,
+      );
       if (!Array.isArray(batch)) throw new Error("github_collection_expected");
-      rows.push(...batch);
-      if (batch.length < perPage) break;
+      sourceRows += batch.length;
+
+      for (const row of batch) {
+        if (filter(row)) accepted.push(row);
+        if (accepted.length > bounded) break;
+      }
+
+      if (accepted.length > bounded) break;
+      if (batch.length < perPage) {
+        exhausted = true;
+        break;
+      }
     }
-    return rows.slice(0, bounded);
+
+    return {
+      rows: accepted.slice(0, bounded),
+      truncated: accepted.length > bounded || !exhausted,
+      source_rows_observed: sourceRows,
+    };
+  }
+
+  async paginate(path, limit = this.limit) {
+    return (await this.paginateWindow(path, limit)).rows;
   }
 
   async readTextFile(repo, path, ref) {
@@ -101,18 +125,24 @@ export class GitHubReader {
     const bounded = boundedLimit(limit);
     const root = "/repos/" + encodeRepo(repo);
     const repository = await this.request(root);
-    const issueRows = await this.paginate(
+
+    const issueWindow = await this.paginateWindow(
       root + "/issues?state=all&sort=updated&direction=desc",
-      Math.min(1000, bounded * 2),
+      bounded,
+      { filter: row => !row.pull_request },
     );
-    const issues = issueRows.filter(row => !row.pull_request).slice(0, bounded);
-    const pulls = await this.paginate(
+    const pullWindow = await this.paginateWindow(
       root + "/pulls?state=all&sort=updated&direction=desc",
       bounded,
     );
-    let commits = [];
+
+    let commitWindow = {
+      rows: [],
+      truncated: false,
+      source_rows_observed: 0,
+    };
     try {
-      commits = await this.paginate(
+      commitWindow = await this.paginateWindow(
         root + "/commits?sha=" + encodeURIComponent(repository.default_branch),
         Math.min(bounded, 200),
       );
@@ -138,12 +168,21 @@ export class GitHubReader {
 
     return {
       repository,
-      issues,
-      pulls,
-      commits,
+      issues: issueWindow.rows,
+      pulls: pullWindow.rows,
+      commits: commitWindow.rows,
       authorityPaths,
       documents,
       configPresent: configText !== null,
+      coverage: {
+        requested_limit: bounded,
+        observed_issue_roots: issueWindow.rows.length,
+        issues_truncated: issueWindow.truncated,
+        observed_pull_requests: pullWindow.rows.length,
+        pulls_truncated: pullWindow.truncated,
+        observed_commits: commitWindow.rows.length,
+        commits_truncated: commitWindow.truncated,
+      },
     };
   }
 }
