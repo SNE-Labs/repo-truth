@@ -1,0 +1,14 @@
+.github/
+test/
+docs/
+release/
+ROADMAP.md
+.repo-truth.json
+.repo-truth.example.json
+CONTRIBUTING.md
+SECURITY.md
+ORIGIN.md
+CHANGELOG.md
+*.log
+.env
+.env.*

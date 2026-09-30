@@ -1,6 +1,6 @@
 {
   "name": "repo-truth-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A deterministic compiler between GitHub and coding agents: truth, dependencies, and verified actionable work.",
   "type": "module",
   "bin": {

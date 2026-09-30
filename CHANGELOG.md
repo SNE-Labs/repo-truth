@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.2 — 2026-09-30
+
+Private-repository authentication and local-target UX fix. Compiler truth, dependency and eligibility semantics are unchanged.
+
+### Fixed
+
+- automatically reuse an authenticated GitHub CLI session through `gh auth token` when `GITHUB_TOKEN` / `GH_TOKEN` are absent;
+- preserve explicit environment-token precedence;
+- make private-repository 404s explain the authentication requirement;
+- make `scan .` failures outside a Git clone explain the recovery path;
+- add an explicit `.npmignore` so Git-based npx installs do not rely on npm's `.gitignore` fallback.
+
+
 ## 0.1.1 — 2026-09-30
 
 Distribution-only follow-up. Compiler truth, dependency and eligibility semantics are unchanged.

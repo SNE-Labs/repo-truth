@@ -1,0 +1,28 @@
+name: Release v0.1.2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - release/v0.1.2.json
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate release marker
+        run: |
+          node -e "const m=require('./release/v0.1.2.json'); if(m.version!=='0.1.2'||m.tag!=='v0.1.2'||m.release!==true) process.exit(1)"
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.2 >/dev/null 2>&1; then
+            echo "v0.1.2 already exists; leaving it unchanged."
+            exit 0
+          fi
+          gh release create v0.1.2             --target "$GITHUB_SHA"             --title "repo-truth v0.1.2 — private repo auth"             --notes-file docs/release-v0.1.2.md

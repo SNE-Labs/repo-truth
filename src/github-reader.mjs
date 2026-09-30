@@ -1,3 +1,5 @@
+import { resolveGitHubToken } from "./github-auth.mjs";
+
 const API_ROOT = "https://api.github.com";
 
 export function parseRepositoryName(value) {
@@ -41,12 +43,17 @@ export function validateAuthorityPaths(value) {
 
 export class GitHubReader {
   constructor({
-    token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null,
+    token,
     limit = 200,
     fetchImpl = globalThis.fetch,
+    authResolver = resolveGitHubToken,
   } = {}) {
     if (typeof fetchImpl !== "function") throw new Error("fetch_unavailable");
-    this.token = token;
+    const auth = token === undefined
+      ? authResolver()
+      : { token: token || null, source: token ? "explicit" : "none" };
+    this.token = auth.token;
+    this.authSource = auth.source;
     this.limit = boundedLimit(limit);
     this.fetchImpl = fetchImpl;
   }
@@ -124,7 +131,20 @@ export class GitHubReader {
     const repo = parseRepositoryName(repoInput);
     const bounded = boundedLimit(limit);
     const root = "/repos/" + encodeRepo(repo);
-    const repository = await this.request(root);
+    let repository;
+    try {
+      repository = await this.request(root);
+    } catch (error) {
+      if (error?.status === 404 && !this.token) {
+        const authError = new Error(
+          "repository_not_found_or_private_auth_required:" + repo +
+          ": run 'gh auth login' or set GH_TOKEN/GITHUB_TOKEN",
+        );
+        authError.status = 404;
+        throw authError;
+      }
+      throw error;
+    }
 
     const issueWindow = await this.paginateWindow(
       root + "/issues?state=all&sort=updated&direction=desc",
