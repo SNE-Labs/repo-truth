@@ -48,6 +48,7 @@ export function compileScan({
   documents = [],
   authorityPaths = [],
   configPresent = false,
+  coverage = null,
 }) {
   const projection = projectRepository({ repository, issues, pulls, commits });
   const evidenceDocuments = authorityPaths.length
@@ -91,10 +92,21 @@ export function compileScan({
     source: {
       config_present: configPresent,
       authority_paths: authorityPaths,
+      coverage: coverage ?? {
+        requested_limit: null,
+        observed_issue_roots: issues.length,
+        issues_truncated: false,
+        observed_pull_requests: pulls.length,
+        pulls_truncated: false,
+        observed_commits: commits.length,
+        commits_truncated: false,
+      },
     },
     summary: {
       open_issues: openIssues,
       open_pull_requests: openPulls,
+      open_issues_observed: openIssues,
+      open_pull_requests_observed: openPulls,
       truth: openIssueTruth,
       all_task_truth: truth.counts,
       admitted: truth.admitted_task_ids.length,
