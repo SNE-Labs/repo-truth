@@ -1,3 +1,4 @@
+import { stripFencedAuthorityExamples } from "./authority-text.mjs";
 import { posix as path } from "node:path";
 
 const NEGATIVE_CLASSIFICATIONS = Object.freeze({
@@ -74,7 +75,7 @@ function resolveRelativeDocument(authorityMapPath, rawPath) {
 export function extractCanonicalDocumentPaths(documents = [], { authorityMapPath = "docs/README.md" } = {}) {
   const mapDocument = documents.find(document => document.path === authorityMapPath);
   if (!mapDocument?.content) return [];
-  const lines = text(mapDocument.content).split(/\r?\n/);
+  const lines = stripFencedAuthorityExamples(text(mapDocument.content)).split(/\r?\n/);
   let inside = false;
   const canonical = new Set([authorityMapPath]);
   for (const line of lines) {
@@ -112,7 +113,7 @@ function addClaim(rows, value) {
 
 function extractCanonicalDeclarations({ document, taskBySource, uniqueByNumber }) {
   const claims = [];
-  const lines = text(document.content).split(/\r?\n/);
+  const lines = stripFencedAuthorityExamples(text(document.content)).split(/\r?\n/);
   for (const [index, line] of lines.entries()) {
     const compact = line.trim();
     if (!compact) continue;
@@ -170,7 +171,7 @@ function extractCanonicalDeclarations({ document, taskBySource, uniqueByNumber }
 
 function explicitRelationsFromText({ value, source, locatorPrefix, taskBySource, uniqueByNumber, authority = "explicit_relation" }) {
   const claims = [];
-  const lines = text(value).split(/\r?\n/);
+  const lines = stripFencedAuthorityExamples(text(value)).split(/\r?\n/);
   for (const [index, line] of lines.entries()) {
     const compact = line.trim();
     if (!compact) continue;
