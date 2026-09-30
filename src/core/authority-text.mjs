@@ -15,3 +15,14 @@ export function stripFencedAuthorityExamples(text = "") {
   }
   return kept.join("\n");
 }
+
+export function stripAuthorityExamples(text = "") {
+  const withoutFences = stripFencedAuthorityExamples(text);
+  const withoutComments = withoutFences.replace(/<!--[\s\S]*?-->/g, "");
+  const kept = [];
+  for (const line of withoutComments.split(/\r?\n/)) {
+    if (/^\s*>/.test(line)) continue;
+    kept.push(line.replace(/`[^`\n]*`/g, ""));
+  }
+  return kept.join("\n");
+}
