@@ -69,3 +69,25 @@ test("provider-open state alone remains unknown and is never promoted into ready
   assert.equal(report.summary.truth.unknown, report.summary.open_issues);
   assert.equal(Object.values(report.summary.truth).reduce((sum, value) => sum + value, 0), report.summary.open_issues);
 });
+
+test("scan preserves bounded observation coverage without presenting it as repository total", () => {
+  const report = compileScan({
+    repository,
+    issues,
+    pulls: [],
+    commits: [],
+    coverage: {
+      requested_limit: 2,
+      observed_issue_roots: 2,
+      issues_truncated: true,
+      observed_pull_requests: 0,
+      pulls_truncated: false,
+      observed_commits: 2,
+      commits_truncated: true,
+    },
+  });
+
+  assert.equal(report.source.coverage.issues_truncated, true);
+  assert.equal(report.source.coverage.observed_issue_roots, 2);
+  assert.equal(report.summary.open_issues_observed, 1);
+});
