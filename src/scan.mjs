@@ -6,6 +6,15 @@ import { compileRepositoryTruthEvidence } from "./core/truth-evidence.mjs";
 import { GitHubReader } from "./github-reader.mjs";
 
 const SYNTHETIC_AUTHORITY_MAP = ".repo-truth-authority.md";
+const TRUTH_CLASSES = [
+  "live",
+  "blocked",
+  "superseded",
+  "absorbed",
+  "historical",
+  "abandoned",
+  "unknown",
+];
 
 function authorityMap(paths) {
   return {
@@ -17,6 +26,18 @@ function authorityMap(paths) {
 function countReadyIssues(tasks, eligibility) {
   const ready = new Set(eligibility.eligible_task_ids ?? []);
   return tasks.filter(task => task.source_kind === "issue" && ready.has(task.id)).length;
+}
+
+function countOpenIssueTruth(tasks, truth) {
+  const byTask = new Map(truth.candidates.map(candidate => [candidate.task_id, candidate]));
+  const counts = Object.fromEntries(TRUTH_CLASSES.map(key => [key, 0]));
+  for (const task of tasks) {
+    if (task.source_kind !== "issue") continue;
+    if (task.state === "done" || task.state === "cancelled") continue;
+    const classification = byTask.get(task.id)?.classification ?? "unknown";
+    counts[classification] = (counts[classification] ?? 0) + 1;
+  }
+  return counts;
 }
 
 export function compileScan({
@@ -61,6 +82,7 @@ export function compileScan({
   });
   const openIssues = issues.filter(row => row.state === "open").length;
   const openPulls = pulls.filter(row => row.state === "open").length;
+  const openIssueTruth = countOpenIssueTruth(projection.tasks, truth);
   const agentReadyIssues = countReadyIssues(projection.tasks, eligibility);
 
   return {
@@ -73,12 +95,14 @@ export function compileScan({
     summary: {
       open_issues: openIssues,
       open_pull_requests: openPulls,
-      truth: truth.counts,
+      truth: openIssueTruth,
+      all_task_truth: truth.counts,
       admitted: truth.admitted_task_ids.length,
       unresolved: truth.unresolved_task_ids.length,
       excluded: truth.excluded_task_ids.length,
       agent_ready: eligibility.eligible_task_ids.length,
       agent_ready_issues: agentReadyIssues,
+      open_issue_unresolved: openIssueTruth.unknown,
       fenced: eligibility.fenced_task_ids.length,
     },
     tasks: projection.tasks,
