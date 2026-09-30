@@ -1,0 +1,8 @@
+repo-truth demo
+
+#1  LIVE        READY         Ship the parser
+#2  SUPERSEDED  DO NOT START  Use the old cache
+#3  LIVE        FENCED        Publish the release
+#4  LIVE        READY         Finish release notes
+
+verified ready: #1, #4
