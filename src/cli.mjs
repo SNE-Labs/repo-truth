@@ -66,6 +66,14 @@ function formatScan(report) {
     truthLine(counts, "abandoned"),
     truthLine(counts, "unknown"),
     "",
+    "Authority",
+    report.source.config_present
+      ? "  canonical documents: " + report.source.authority_paths.length + " configured"
+      : "  no .repo-truth.json configured",
+    report.source.config_present
+      ? "  OPEN still requires explicit repository evidence"
+      : "  provider OPEN cannot promote work to LIVE",
+    "",
     "Agent eligibility",
     "  " + report.summary.agent_ready_issues + " verified agent-ready issues",
     "  " + report.summary.fenced + " admitted tasks fenced",
