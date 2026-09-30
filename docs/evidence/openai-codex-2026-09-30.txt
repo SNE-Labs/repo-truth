@@ -1,0 +1,33 @@
+repo-truth public scan evidence
+observed_at: 2026-09-30T15:58:27Z
+command: node bin/repo-truth.mjs scan openai/codex --limit 25
+repository: openai/codex
+compiler_branch: feat/launch-hardening
+purpose: one-time external scan before launch; compiler semantics were not tuned to this result
+
+repo-truth · openai/codex
+
+GitHub
+  20 open issues
+  0 open pull requests
+
+Repository truth
+     0  LIVE
+     0  BLOCKED
+     0  SUPERSEDED
+     0  ABSORBED
+     0  HISTORICAL
+     0  ABANDONED
+    20  UNKNOWN
+
+Agent eligibility
+  0 verified agent-ready issues
+  0 admitted tasks fenced
+  20 open issues truth unresolved
+
+OPEN ≠ ACTIONABLE
+20 open issues → 0 verified agent-ready
+
+Interpretation:
+The zero-config compiler refused to promote GitHub OPEN state into live roadmap truth.
+This is expected fail-closed behavior, not a claim that the 20 issues are invalid or unimportant.
