@@ -36,7 +36,7 @@ export function resolveRepositoryTarget(value, {
         stdio: ["ignore", "pipe", "ignore"],
       });
     } catch {
-      throw new Error("git_origin_unavailable");
+      throw new Error("git_origin_unavailable: use owner/name or run inside a GitHub clone");
     }
     return repositoryFromRemote(remote);
   }
