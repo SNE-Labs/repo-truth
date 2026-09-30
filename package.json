@@ -1,10 +1,11 @@
 {
-  "name": "repo-truth",
-  "version": "0.1.0",
+  "name": "repo-truth-cli",
+  "version": "0.1.1",
   "description": "A deterministic compiler between GitHub and coding agents: truth, dependencies, and verified actionable work.",
   "type": "module",
   "bin": {
-    "repo-truth": "bin/repo-truth.mjs"
+    "repo-truth": "bin/repo-truth.mjs",
+    "repo-truth-cli": "bin/repo-truth.mjs"
   },
   "exports": {
     ".": "./src/index.mjs"
@@ -31,5 +32,8 @@
     "developer-tools",
     "cli"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -1,6 +1,19 @@
 # Changelog
 
-## 0.1.0 — unreleased
+## 0.1.1 — 2026-09-30
+
+Distribution-only follow-up. Compiler truth, dependency and eligibility semantics are unchanged.
+
+### Changed
+
+- npm package identity moved from the unavailable `repo-truth` name to `repo-truth-cli`;
+- executable remains `repo-truth`;
+- package version advanced to `0.1.1`;
+- npm publication workflow supports token bootstrap and future trusted publishing/OIDC;
+- npm registry name probes are preserved as launch evidence.
+
+
+## 0.1.0 — 2026-09-30
 
 Initial public extraction of the repository-truth compiler from SNE Labs' internal GitHub-Flow system.
 

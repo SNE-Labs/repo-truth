@@ -1,0 +1,35 @@
+npm package-name probe
+observed_at: 2026-09-30T16:30:22Z
+source: GitHub Actions / npm registry
+
+Existing package:
+
+repo-truth
+  status: EXISTS
+  version: 0.9.1
+  repository: git+https://github.com/hilmimuktitama/repo-truth.git
+
+Candidate probes:
+
+repo-truth-cli
+  status: E404 / not found
+
+github-repo-truth
+  status: E404 / not found
+
+agent-repo-truth
+  status: E404 / not found
+
+repository-truth
+  status: E404 / not found
+
+Decision:
+Use npm package name `repo-truth-cli` while preserving the executable command `repo-truth`.
+
+Reason:
+- avoids collision with an existing unrelated package;
+- preserves the GitHub/project identity;
+- keeps a short user-facing executable;
+- E404 was observed directly from registry.npmjs.org during CI.
+
+Availability is a point-in-time observation, not a permanent reservation. Publication still requires npm account authority.

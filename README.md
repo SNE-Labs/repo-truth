@@ -1,5 +1,9 @@
 # repo-truth
 
+[![CI](https://github.com/SNE-Labs/repo-truth/actions/workflows/ci.yml/badge.svg)](https://github.com/SNE-Labs/repo-truth/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/SNE-Labs/repo-truth?display_name=tag)](https://github.com/SNE-Labs/repo-truth/releases)
+[![License](https://img.shields.io/github/license/SNE-Labs/repo-truth)](LICENSE)
+
 **Open ≠ actionable.**
 
 Compile GitHub into work a coding agent can actually start.
@@ -22,11 +26,19 @@ If the repository cannot prove that work is live, repo-truth reports `UNKNOWN` i
 
 ## Try it
 
-Until an npm package is published, run directly from GitHub:
+The npm distribution name is `repo-truth-cli`. Until its first npm publication is authorized, run directly from GitHub:
 
 ```bash
 npx github:SNE-Labs/repo-truth scan owner/repo
 ```
+
+After npm publication, the equivalent command is:
+
+```bash
+npx repo-truth-cli scan owner/repo
+```
+
+The installed executable remains `repo-truth`.
 
 Or from inside a local clone whose `origin` points to GitHub:
 
@@ -215,7 +227,7 @@ Contributions are welcome when they preserve the fail-closed contract. Read [`CO
 
 Security-sensitive findings should follow [`SECURITY.md`](SECURITY.md) and must not include credentials or private repository content in public issues.
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-v0.1.0.md`](docs/release-v0.1.0.md) for the prepared v0.1 release notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for release history. npm package-name evidence is frozen at [`docs/evidence/npm-package-names-2026-09-30.txt`](docs/evidence/npm-package-names-2026-09-30.txt).
 
 ## Status
 
