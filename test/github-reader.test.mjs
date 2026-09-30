@@ -60,3 +60,36 @@ test("bounded pagination reports complete when the source is exhausted", async (
   assert.deepEqual(window.rows, [{ id: 1 }, { id: 2 }]);
   assert.equal(window.truncated, false);
 });
+
+test("private-repository 404 explains authentication when no token is available", async () => {
+  const reader = new GitHubReader({
+    limit: 10,
+    authResolver: () => ({ token: null, source: "none" }),
+    fetchImpl: async () => response({
+      message: "Not Found",
+      documentation_url: "https://docs.github.com/rest/repos/repos#get-a-repository",
+      status: "404",
+    }, 404),
+  });
+
+  await assert.rejects(
+    () => reader.load("acme/private"),
+    /repository_not_found_or_private_auth_required:acme\/private: run 'gh auth login' or set GH_TOKEN\/GITHUB_TOKEN/,
+  );
+});
+
+test("resolved auth token is attached to GitHub requests without being exposed elsewhere", async () => {
+  let authorization = null;
+  const reader = new GitHubReader({
+    limit: 1,
+    authResolver: () => ({ token: "secret-token", source: "gh_cli" }),
+    fetchImpl: async (_url, options) => {
+      authorization = options.headers.Authorization;
+      return response({ full_name: "acme/private", default_branch: "main" });
+    },
+  });
+
+  await reader.request("/repos/acme/private");
+  assert.equal(authorization, "Bearer secret-token");
+  assert.equal(reader.authSource, "gh_cli");
+});
