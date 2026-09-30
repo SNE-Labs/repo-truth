@@ -30,3 +30,12 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           "$TMP/node_modules/.bin/repo-truth" scan . --limit 20 --json > local-smoke.json
           node -e "const r=require('./local-smoke.json'); if(r.repository!=='SNE-Labs/repo-truth'||!r.source?.coverage||r.source.coverage.requested_limit!==20) process.exit(1)"
+      - name: Probe npm package name
+        run: |
+          if npm view repo-truth name version repository.url --json > npm-view.json 2> npm-view.err; then
+            echo "repo-truth exists on npm"
+            cat npm-view.json
+          else
+            echo "repo-truth not found on npm"
+            cat npm-view.err
+          fi
