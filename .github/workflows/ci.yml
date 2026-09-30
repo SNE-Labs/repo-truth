@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run ci
+      - name: Smoke test GitHub reader
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node bin/repo-truth.mjs scan SNE-Labs/repo-truth --limit 20 --json > smoke.json
+          node -e "const r=require('./smoke.json'); if(r.version!=='repo-truth.scan.v0'||r.repository!=='SNE-Labs/repo-truth') process.exit(1)"

@@ -1,0 +1,34 @@
+{
+  "name": "repo-truth",
+  "version": "0.1.0",
+  "description": "A deterministic compiler between GitHub and coding agents: truth, dependencies, and verified actionable work.",
+  "type": "module",
+  "bin": {
+    "repo-truth": "bin/repo-truth.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "scripts": {
+    "check": "node --check bin/repo-truth.mjs && node --check src/*.mjs && node --check src/core/*.mjs",
+    "test": "node --test test/*.test.mjs",
+    "ci": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SNE-Labs/repo-truth.git"
+  },
+  "keywords": [
+    "github",
+    "coding-agents",
+    "agents",
+    "issues",
+    "pull-requests",
+    "developer-tools",
+    "cli"
+  ],
+  "license": "MIT"
+}
