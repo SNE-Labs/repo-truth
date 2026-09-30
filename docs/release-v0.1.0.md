@@ -97,10 +97,8 @@ agentic-ai
 
 `repo-truth v0.1.0 — Open ≠ actionable`
 
-## Release commit candidate
+## Release commit
 
-Current candidate at preparation time:
+The release is armed by `release/v0.1.0.json`. When that marker reaches `main`, the release workflow creates tag `v0.1.0` and the GitHub Release against that exact merge SHA.
 
-`b6398930f9d244fc8cdf1ca7ca05b2b5d98d69cf`
-
-If additional pre-release documentation-only commits land, tag the final validated `main` commit instead.
+The workflow is idempotent: if `v0.1.0` already exists as a GitHub Release, it leaves the existing release unchanged.
