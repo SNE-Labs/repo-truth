@@ -91,3 +91,46 @@ test("scan preserves bounded observation coverage without presenting it as repos
   assert.equal(report.source.coverage.observed_issue_roots, 2);
   assert.equal(report.summary.open_issues_observed, 1);
 });
+
+test("open Pull Request truth is summarized separately from open Issues", () => {
+  const pulls = [
+    {
+      number: 7,
+      title: "Already materialized",
+      body: "",
+      state: "open",
+      head: { sha: "pr7-head" },
+      updated_at: "2026-09-30T00:00:00Z",
+      html_url: "https://github.com/acme/repo/pull/7",
+    },
+    {
+      number: 8,
+      title: "Still unresolved",
+      body: "",
+      state: "open",
+      head: { sha: "pr8-head" },
+      updated_at: "2026-09-30T00:00:00Z",
+      html_url: "https://github.com/acme/repo/pull/8",
+    },
+  ];
+  const commits = [
+    { sha: "main-tip", parents: [{ sha: "pr7-head" }] },
+  ];
+
+  const report = compileScan({
+    repository,
+    issues: [],
+    pulls,
+    commits,
+  });
+
+  assert.equal(report.summary.open_pull_requests_observed, 2);
+  assert.equal(report.summary.open_pull_truth.absorbed, 1);
+  assert.equal(report.summary.open_pull_truth.unknown, 1);
+  assert.equal(report.summary.open_pull_absorbed, 1);
+  assert.equal(report.summary.open_pull_unresolved, 1);
+  assert.equal(
+    Object.values(report.summary.open_pull_truth).reduce((sum, value) => sum + value, 0),
+    2,
+  );
+});

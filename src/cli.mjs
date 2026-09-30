@@ -41,6 +41,18 @@ function truthLine(counts, key) {
   return "  " + String(counts[key] ?? 0).padStart(4) + "  " + key.toUpperCase();
 }
 
+function truthLines(counts) {
+  return [
+    truthLine(counts, "live"),
+    truthLine(counts, "blocked"),
+    truthLine(counts, "superseded"),
+    truthLine(counts, "absorbed"),
+    truthLine(counts, "historical"),
+    truthLine(counts, "abandoned"),
+    truthLine(counts, "unknown"),
+  ];
+}
+
 function formatScan(report) {
   const counts = report.summary.truth;
   const coverage = report.source.coverage ?? {};
@@ -57,14 +69,11 @@ function formatScan(report) {
     "  " + pullWindow,
     "  " + report.summary.open_pull_requests_observed + " open pull requests in observed window",
     "",
-    "Repository truth",
-    truthLine(counts, "live"),
-    truthLine(counts, "blocked"),
-    truthLine(counts, "superseded"),
-    truthLine(counts, "absorbed"),
-    truthLine(counts, "historical"),
-    truthLine(counts, "abandoned"),
-    truthLine(counts, "unknown"),
+    "Open Issue truth",
+    ...truthLines(counts),
+    "",
+    "Open Pull Request truth",
+    ...truthLines(report.summary.open_pull_truth ?? {}),
     "",
     "Authority",
     report.source.config_present
@@ -81,6 +90,9 @@ function formatScan(report) {
     "",
     "OPEN ≠ ACTIONABLE",
     report.summary.open_issues_observed + " observed open issues → " + report.summary.agent_ready_issues + " verified agent-ready",
+    report.summary.open_pull_requests_observed + " observed open PRs → " +
+      report.summary.open_pull_absorbed + " materially absorbed / " +
+      report.summary.open_pull_unresolved + " unresolved",
   ].join("\n");
 }
 

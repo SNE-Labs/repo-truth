@@ -28,12 +28,13 @@ function countReadyIssues(tasks, eligibility) {
   return tasks.filter(task => task.source_kind === "issue" && ready.has(task.id)).length;
 }
 
-function countOpenIssueTruth(tasks, truth) {
+function countOpenSourceTruth(tasks, truth, sourceKind, openNumbers) {
   const byTask = new Map(truth.candidates.map(candidate => [candidate.task_id, candidate]));
+  const open = new Set(openNumbers.map(Number));
   const counts = Object.fromEntries(TRUTH_CLASSES.map(key => [key, 0]));
   for (const task of tasks) {
-    if (task.source_kind !== "issue") continue;
-    if (task.state === "done" || task.state === "cancelled") continue;
+    if (task.source_kind !== sourceKind) continue;
+    if (!open.has(Number(task.source_number))) continue;
     const classification = byTask.get(task.id)?.classification ?? "unknown";
     counts[classification] = (counts[classification] ?? 0) + 1;
   }
@@ -81,9 +82,22 @@ export function compileScan({
     candidateTaskIds: truth.admitted_task_ids,
     scopeSource: "repository-truth.v1",
   });
-  const openIssues = issues.filter(row => row.state === "open").length;
-  const openPulls = pulls.filter(row => row.state === "open").length;
-  const openIssueTruth = countOpenIssueTruth(projection.tasks, truth);
+  const openIssueRows = issues.filter(row => row.state === "open");
+  const openPullRows = pulls.filter(row => row.state === "open");
+  const openIssues = openIssueRows.length;
+  const openPulls = openPullRows.length;
+  const openIssueTruth = countOpenSourceTruth(
+    projection.tasks,
+    truth,
+    "issue",
+    openIssueRows.map(row => row.number),
+  );
+  const openPullTruth = countOpenSourceTruth(
+    projection.tasks,
+    truth,
+    "pull_request",
+    openPullRows.map(row => row.number),
+  );
   const agentReadyIssues = countReadyIssues(projection.tasks, eligibility);
 
   return {
@@ -108,6 +122,8 @@ export function compileScan({
       open_issues_observed: openIssues,
       open_pull_requests_observed: openPulls,
       truth: openIssueTruth,
+      open_issue_truth: openIssueTruth,
+      open_pull_truth: openPullTruth,
       all_task_truth: truth.counts,
       admitted: truth.admitted_task_ids.length,
       unresolved: truth.unresolved_task_ids.length,
@@ -115,6 +131,8 @@ export function compileScan({
       agent_ready: eligibility.eligible_task_ids.length,
       agent_ready_issues: agentReadyIssues,
       open_issue_unresolved: openIssueTruth.unknown,
+      open_pull_unresolved: openPullTruth.unknown,
+      open_pull_absorbed: openPullTruth.absorbed,
       fenced: eligibility.fenced_task_ids.length,
     },
     tasks: projection.tasks,

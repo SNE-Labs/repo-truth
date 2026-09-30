@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.4 — 2026-09-30
+
+Open Pull Request truth surface.
+
+### Added
+
+- separate `open_pull_truth` summary in JSON;
+- CLI section for open Pull Request truth;
+- explicit `observed open PRs → materially absorbed / unresolved` headline.
+
+This exposes an existing compiler capability: an open PR whose head is already reachable from the default branch can classify as `ABSORBED` even when GitHub still reports the PR as open.
+
+
 ## 0.1.3 — 2026-09-30
 
 Authority-input hygiene and scan explanation fix.

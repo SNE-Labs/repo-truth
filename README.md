@@ -110,7 +110,7 @@ Observed GitHub window
   25 pull requests observed · truncated
   11 open pull requests in observed window
 
-Repository truth
+Open Issue truth
      8  LIVE
      4  BLOCKED
      2  SUPERSEDED
@@ -119,6 +119,15 @@ Repository truth
      0  ABANDONED
     32  UNKNOWN
 
+Open Pull Request truth
+     0  LIVE
+     0  BLOCKED
+     0  SUPERSEDED
+     8  ABSORBED
+     0  HISTORICAL
+     0  ABANDONED
+     3  UNKNOWN
+
 Agent eligibility
   8 verified agent-ready issues
   4 admitted tasks fenced
@@ -126,6 +135,7 @@ Agent eligibility
 
 OPEN ≠ ACTIONABLE
 47 observed open issues → 8 verified agent-ready
+11 observed open PRs → 8 materially absorbed / 3 unresolved
 ```
 
 > The numbers above illustrate the output format; they are not a benchmark claim.
@@ -146,7 +156,7 @@ repo-truth scan owner/repo --json
 
 ## Zero-config behavior
 
-The summary truth counts are scoped to **open Issue roots inside the observed window**. The full JSON also exposes `all_task_truth` across Issues, Pull Requests and derived checklist tasks.
+The CLI reports **open Issue truth** and **open Pull Request truth** separately inside the observed window. This matters because an administratively open PR can already be materially contained in the default branch. The full JSON also exposes `all_task_truth` across Issues, Pull Requests and derived checklist tasks.
 
 `--limit` bounds observation; it is never presented as the repository's total backlog. The report exposes `source.coverage` with the requested limit, observed counts and explicit `*_truncated` flags.
 
