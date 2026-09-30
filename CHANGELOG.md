@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.3 — 2026-09-30
+
+Authority-input hygiene and scan explanation fix.
+
+### Fixed
+
+- fenced code examples cannot emit canonical truth or explicit-relation claims;
+- inline code spans, blockquotes and HTML comments are removed before text-derived truth extraction;
+- closure syntax such as `Closes #N` inside examples cannot absorb real Issues;
+- scan output now states whether canonical authority is configured instead of leaving all-`UNKNOWN` results unexplained.
+
+
 ## 0.1.2 — 2026-09-30
 
 Private-repository authentication and local-target UX fix. Compiler truth, dependency and eligibility semantics are unchanged.

@@ -162,6 +162,8 @@ repo-truth can immediately prove relationships that are explicit in GitHub mater
 
 An open GitHub object alone is **not** treated as proof that the work still belongs to the live roadmap.
 
+Truth extraction also strips fenced code blocks, inline code spans, blockquotes and HTML comments before interpreting text-derived authority. Examples in contracts and quoted discussion cannot silently become repository truth.
+
 ## Tell repo-truth where roadmap truth lives
 
 Add `.repo-truth.json`:
