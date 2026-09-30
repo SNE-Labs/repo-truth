@@ -297,3 +297,67 @@ test("authority map ignores fenced canonical-document examples", () => {
     ["docs/README.md", "docs/REAL.md"],
   );
 });
+
+test("inline-code relation examples cannot create truth claims", () => {
+  const tasks = [
+    task("task_pr4", "pull_request", 4),
+    task("task_pr16", "pull_request", 16),
+  ];
+  const evidence = compileRepositoryTruthEvidence({
+    repository,
+    tasks,
+    documents: [
+      authorityMap(),
+      {
+        path: "docs/CURRENT.md",
+        content: "Example only: `PR #16 supersedes PR #4` must not authorize repository truth.",
+      },
+    ],
+  });
+  assert.deepEqual(evidence.claims, []);
+});
+
+test("blockquote and html-comment examples cannot create truth claims", () => {
+  const tasks = [
+    task("task_pr4", "pull_request", 4),
+    task("task_pr16", "pull_request", 16),
+  ];
+  const evidence = compileRepositoryTruthEvidence({
+    repository,
+    tasks,
+    documents: [
+      authorityMap(),
+      {
+        path: "docs/CURRENT.md",
+        content: [
+          "> Current implementation: PR #16",
+          "<!-- PR #16 supersedes PR #4 -->",
+        ].join("\n"),
+      },
+    ],
+  });
+  assert.deepEqual(evidence.claims, []);
+});
+
+test("closure syntax inside fenced examples cannot absorb a real Issue", () => {
+  const tasks = [
+    task("task_pr20", "pull_request", 20, "done"),
+    task("task_issue21", "issue", 21, "active"),
+  ];
+  const evidence = compileRepositoryTruthEvidence({
+    repository,
+    tasks,
+    pulls: [{
+      number: 20,
+      title: "Documentation example",
+      body: "```text\nCloses #21\n```",
+      merged: true,
+      merged_at: "2026-09-01T13:00:00Z",
+      merge_commit_sha: "merge20",
+    }],
+  });
+  assert.deepEqual(
+    evidence.claims.map(row => [row.subject.task_id, row.classification, row.authority]),
+    [["task_pr20", "absorbed", "accepted_merge"]],
+  );
+});
