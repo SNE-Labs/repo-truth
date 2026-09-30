@@ -49,6 +49,8 @@ test("authority-backed live work with satisfied dependency becomes agent-ready",
   assert.equal(detail.eligibility.eligible, true);
   assert.deepEqual(readyIssues(report).map(row => row.source_number), [1]);
   assert.equal(report.summary.agent_ready_issues, 1);
+  assert.equal(Object.values(report.summary.truth).reduce((sum, value) => sum + value, 0), report.summary.open_issues);
+  assert.equal(report.summary.all_task_truth.absorbed, 0);
 });
 
 test("provider-open state alone remains unknown and is never promoted into ready work", () => {
@@ -64,4 +66,6 @@ test("provider-open state alone remains unknown and is never promoted into ready
   assert.equal(detail.truth.membership, "unresolved");
   assert.equal(detail.eligibility, null);
   assert.equal(report.summary.agent_ready_issues, 0);
+  assert.equal(report.summary.truth.unknown, report.summary.open_issues);
+  assert.equal(Object.values(report.summary.truth).reduce((sum, value) => sum + value, 0), report.summary.open_issues);
 });

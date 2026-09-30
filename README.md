@@ -44,10 +44,10 @@ GitHub
   11 open pull requests
 
 Repository truth
-    12  LIVE
+     8  LIVE
      4  BLOCKED
-     7  SUPERSEDED
-     3  ABSORBED
+     2  SUPERSEDED
+     1  ABSORBED
      0  HISTORICAL
      0  ABANDONED
     32  UNKNOWN
@@ -55,7 +55,7 @@ Repository truth
 Agent eligibility
   8 verified agent-ready issues
   4 admitted tasks fenced
-  32 truth unresolved
+  32 open issues truth unresolved
 
 OPEN ≠ ACTIONABLE
 47 open issues → 8 verified agent-ready
@@ -75,6 +75,8 @@ repo-truth scan owner/repo --json
 `scan` compiles the repository. `next` emits only verified agent-ready issues. `explain` shows why one issue was classified and whether dependencies fence it.
 
 ## Zero-config behavior
+
+The summary truth counts are scoped to **open Issue roots**. The full JSON also exposes `all_task_truth` across Issues, Pull Requests and derived checklist tasks.
 
 repo-truth can immediately prove relationships that are explicit in GitHub material, including:
 

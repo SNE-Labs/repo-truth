@@ -59,7 +59,7 @@ function formatScan(report) {
     "Agent eligibility",
     "  " + report.summary.agent_ready_issues + " verified agent-ready issues",
     "  " + report.summary.fenced + " admitted tasks fenced",
-    "  " + report.summary.unresolved + " truth unresolved",
+    "  " + report.summary.open_issue_unresolved + " open issues truth unresolved",
     "",
     "OPEN ≠ ACTIONABLE",
     report.summary.open_issues + " open issues → " + report.summary.agent_ready_issues + " verified agent-ready",
