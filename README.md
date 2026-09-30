@@ -209,6 +209,14 @@ node bin/repo-truth.mjs scan SNE-Labs/repo-truth
 
 The compiler was extracted from SNE Labs' internal GitHub-Flow system. See [`ORIGIN.md`](ORIGIN.md) for the exact donor commit and files. The launch is being measured explicitly; see [`docs/experiment.md`](docs/experiment.md).
 
+## Contributing
+
+Contributions are welcome when they preserve the fail-closed contract. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing truth, dependency or eligibility semantics.
+
+Security-sensitive findings should follow [`SECURITY.md`](SECURITY.md) and must not include credentials or private repository content in public issues.
+
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-v0.1.0.md`](docs/release-v0.1.0.md) for the prepared v0.1 release notes.
+
 ## Status
 
 v0.1 is intentionally conservative. It is a compiler of evidence, not a universal semantic oracle. Expect `UNKNOWN` when a repository does not declare enough truth to automate safely.
