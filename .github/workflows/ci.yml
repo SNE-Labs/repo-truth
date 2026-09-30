@@ -17,6 +17,14 @@ jobs:
         with:
           node-version: 22
       - run: npm run ci
+      - name: Verify clean package install
+        run: |
+          PACKAGE=$(npm pack --silent)
+          TMP=$(mktemp -d)
+          cd "$TMP"
+          npm init -y >/dev/null
+          npm install "$GITHUB_WORKSPACE/$PACKAGE" >/dev/null
+          ./node_modules/.bin/repo-truth --help >/dev/null
       - name: Smoke test GitHub reader
         env:
           GITHUB_TOKEN: ${{ github.token }}

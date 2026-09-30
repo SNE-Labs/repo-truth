@@ -12,7 +12,8 @@
   "scripts": {
     "check": "node --check bin/repo-truth.mjs && node --check src/*.mjs && node --check src/core/*.mjs",
     "test": "node --test test/*.test.mjs",
-    "ci": "npm run check && npm test"
+    "ci": "npm run check && npm test",
+    "demo": "node demo/run.mjs"
   },
   "engines": {
     "node": ">=22"

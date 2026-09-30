@@ -34,6 +34,27 @@ For higher GitHub API limits or private repositories:
 GITHUB_TOKEN=... npx github:SNE-Labs/repo-truth scan owner/repo
 ```
 
+## 10-second demo
+
+The repository ships a deterministic offline fixture:
+
+```bash
+npm run demo
+```
+
+```text
+repo-truth demo
+
+#1  LIVE        READY         Ship the parser
+#2  SUPERSEDED  DO NOT START  Use the old cache
+#3  LIVE        FENCED        Publish the release
+#4  LIVE        READY         Finish release notes
+
+verified ready: #1, #4
+```
+
+No network, token or model is involved in this demo. The fixture is covered by the normal test suite. A reusable terminal capture lives in [`docs/demo.txt`](docs/demo.txt).
+
 Example output:
 
 ```text
@@ -167,7 +188,7 @@ node bin/repo-truth.mjs scan SNE-Labs/repo-truth
 
 ## Origin
 
-The compiler was extracted from SNE Labs' internal GitHub-Flow system. See [`ORIGIN.md`](ORIGIN.md) for the exact donor commit and files.
+The compiler was extracted from SNE Labs' internal GitHub-Flow system. See [`ORIGIN.md`](ORIGIN.md) for the exact donor commit and files. The launch is being measured explicitly; see [`docs/experiment.md`](docs/experiment.md).
 
 ## Status
 
