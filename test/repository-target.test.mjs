@@ -45,3 +45,15 @@ test("GitHub remote parser accepts https scp and ssh forms", () => {
   );
   assert.throws(() => repositoryFromRemote("https://gitlab.com/acme/repo.git"));
 });
+
+test("local target failure explains how to recover", () => {
+  assert.throws(
+    () => resolveRepositoryTarget(".", {
+      cwd: "C:\\Users\\R",
+      execFile: () => {
+        throw new Error("not a git repository");
+      },
+    }),
+    /git_origin_unavailable: use owner\/name or run inside a GitHub clone/,
+  );
+});
