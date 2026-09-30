@@ -52,3 +52,17 @@ The launch claim under test is:
 > **Open ≠ actionable.**
 >
 > repo-truth compiles GitHub into work a coding agent can actually start.
+
+## First external scan
+
+One bounded scan was run before launch against a public repository not controlled by SNE Labs:
+
+- repository: `openai/codex`
+- observed at: 2026-09-30T15:58:27Z
+- command: `node bin/repo-truth.mjs scan openai/codex --limit 25`
+- result: 20 open Issues, 20 `UNKNOWN`, 0 verified agent-ready
+- compiler semantics changed after seeing result: no
+
+The raw terminal output is frozen at [`docs/evidence/openai-codex-2026-09-30.txt`](evidence/openai-codex-2026-09-30.txt).
+
+This result is useful because it demonstrates the zero-config fail-closed boundary: GitHub `OPEN` state alone was not promoted into roadmap truth.
