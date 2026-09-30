@@ -24,6 +24,47 @@ No LLM. No embeddings. No vector database.
 
 If the repository cannot prove that work is live, repo-truth reports `UNKNOWN` instead of guessing.
 
+## One real scan
+
+A maintainer-run scan against a private production repository, with its identity intentionally redacted, produced:
+
+```text
+Observed GitHub window
+  8 open issues
+  9 open pull requests
+
+Open Issue truth
+     0  LIVE
+     0  BLOCKED
+     0  SUPERSEDED
+     0  ABSORBED
+     0  HISTORICAL
+     0  ABANDONED
+     8  UNKNOWN
+
+Open Pull Request truth
+     0  LIVE
+     0  BLOCKED
+     0  SUPERSEDED
+     9  ABSORBED
+     0  HISTORICAL
+     0  ABANDONED
+     0  UNKNOWN
+
+OPEN ≠ ACTIONABLE
+8 observed open issues → 0 verified agent-ready
+9 observed open PRs → 9 materially absorbed / 0 unresolved
+```
+
+The important part is not the numbers. It is the asymmetry:
+
+- the Pull Requests were still **OPEN** in GitHub, but their heads were already contained in the default branch, so repo-truth could prove they were materially `ABSORBED`;
+- the open Issues had no configured canonical authority proving current roadmap membership, so repo-truth left all eight `UNKNOWN`.
+
+The same scan therefore proved stale provider state **and** refused to invent current work.
+
+This is a bounded observation, not a claim about every object in the repository. The public evidence note intentionally withholds the private repository identity.
+
 ## Try it
 
 The npm distribution name is `repo-truth-cli`. Until its first npm publication is authorized, run directly from GitHub:
