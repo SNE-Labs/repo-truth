@@ -219,7 +219,7 @@ node bin/repo-truth.mjs scan SNE-Labs/repo-truth
 
 ## Origin
 
-The compiler was extracted from SNE Labs' internal GitHub-Flow system. See [`ORIGIN.md`](ORIGIN.md) for the exact donor commit and files. The launch is being measured explicitly; see [`docs/experiment.md`](docs/experiment.md).
+The compiler was extracted from SNE Labs' internal GitHub-Flow system. See [`ORIGIN.md`](ORIGIN.md) for the exact donor commit and files. The launch is being measured explicitly; see [`docs/experiment.md`](docs/experiment.md), [`docs/t0-launch-protocol.md`](docs/t0-launch-protocol.md), and [`docs/launch-log.md`](docs/launch-log.md).
 
 ## Contributing
 
