@@ -1,4 +1,4 @@
-import { stripFencedAuthorityExamples } from "./authority-text.mjs";
+import { stripAuthorityExamples, stripFencedAuthorityExamples } from "./authority-text.mjs";
 import { posix as path } from "node:path";
 
 const NEGATIVE_CLASSIFICATIONS = Object.freeze({
@@ -113,7 +113,7 @@ function addClaim(rows, value) {
 
 function extractCanonicalDeclarations({ document, taskBySource, uniqueByNumber }) {
   const claims = [];
-  const lines = stripFencedAuthorityExamples(text(document.content)).split(/\r?\n/);
+  const lines = stripAuthorityExamples(text(document.content)).split(/\r?\n/);
   for (const [index, line] of lines.entries()) {
     const compact = line.trim();
     if (!compact) continue;
@@ -171,7 +171,7 @@ function extractCanonicalDeclarations({ document, taskBySource, uniqueByNumber }
 
 function explicitRelationsFromText({ value, source, locatorPrefix, taskBySource, uniqueByNumber, authority = "explicit_relation" }) {
   const claims = [];
-  const lines = stripFencedAuthorityExamples(text(value)).split(/\r?\n/);
+  const lines = stripAuthorityExamples(text(value)).split(/\r?\n/);
   for (const [index, line] of lines.entries()) {
     const compact = line.trim();
     if (!compact) continue;
@@ -227,7 +227,7 @@ function explicitRelationsFromText({ value, source, locatorPrefix, taskBySource,
 
 function closureIssueNumbers(pull) {
   const rows = new Set();
-  const value = `${pull.title ?? ""}\n${pull.body ?? ""}`;
+  const value = stripAuthorityExamples(`${pull.title ?? ""}\n${pull.body ?? ""}`);
   for (const match of value.matchAll(/\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+(?:issue\s*)?#(\d+)\b/gi)) {
     const number = positiveInteger(match[1]);
     if (number) rows.add(number);
