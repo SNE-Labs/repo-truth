@@ -31,6 +31,3 @@ jobs:
         run: |
           node bin/repo-truth.mjs scan SNE-Labs/repo-truth --limit 20 --json > smoke.json
           node -e "const r=require('./smoke.json'); if(r.version!=='repo-truth.scan.v0'||r.repository!=='SNE-Labs/repo-truth') process.exit(1)"
-      - name: Launch evidence public scan
-        run: |
-          node bin/repo-truth.mjs scan openai/codex --limit 25 | tee public-scan.txt
