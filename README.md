@@ -24,6 +24,47 @@ No LLM. No embeddings. No vector database.
 
 If the repository cannot prove that work is live, repo-truth reports `UNKNOWN` instead of guessing.
 
+## One real scan
+
+A maintainer-run scan against a private production repository, with its identity intentionally redacted, produced:
+
+```text
+Observed GitHub window
+  8 open issues
+  9 open pull requests
+
+Open Issue truth
+     0  LIVE
+     0  BLOCKED
+     0  SUPERSEDED
+     0  ABSORBED
+     0  HISTORICAL
+     0  ABANDONED
+     8  UNKNOWN
+
+Open Pull Request truth
+     0  LIVE
+     0  BLOCKED
+     0  SUPERSEDED
+     9  ABSORBED
+     0  HISTORICAL
+     0  ABANDONED
+     0  UNKNOWN
+
+OPEN ≠ ACTIONABLE
+8 observed open issues → 0 verified agent-ready
+9 observed open PRs → 9 materially absorbed / 0 unresolved
+```
+
+The important part is not the numbers. It is the asymmetry:
+
+- the Pull Requests were still **OPEN** in GitHub, but their heads were already contained in the default branch, so repo-truth could prove they were materially `ABSORBED`;
+- the open Issues had no configured canonical authority proving current roadmap membership, so repo-truth left all eight `UNKNOWN`.
+
+The same scan therefore proved stale provider state **and** refused to invent current work.
+
+This is a bounded observation, not a claim about every object in the repository. The public evidence note intentionally withholds the private repository identity: [`docs/evidence/redacted-real-world-scan-2026-09-30.md`](docs/evidence/redacted-real-world-scan-2026-09-30.md).
+
 ## Try it
 
 The npm distribution name is `repo-truth-cli`. Until its first npm publication is authorized, run directly from GitHub:
@@ -177,92 +218,3 @@ Truth extraction also strips fenced code blocks, inline code spans, blockquotes 
 ## Tell repo-truth where roadmap truth lives
 
 Add `.repo-truth.json`:
-
-```json
-{
-  "authority": ["README.md", "ROADMAP.md", "docs/status.md"]
-}
-```
-
-These files may contain explicit declarations such as:
-
-```text
-Current implementation: PR #51
-Issue #42 is superseded
-Issue #18 is historical
-```
-
-Canonical repository evidence outranks lower-authority relationship evidence. Equal-authority contradictions collapse to `UNKNOWN`; repo-truth does not pick a convenient winner.
-
-## Why coding agents need this
-
-GitHub stores objects. It does not guarantee that every open object still represents current work.
-
-```text
-Issue #42: OPEN
-
-ROADMAP.md:
-  Issue #42 is superseded
-
-PR #51:
-  MERGED
-
-repo-truth:
-  SUPERSEDED
-  DO NOT START
-```
-
-That distinction matters when an autonomous coding agent is selecting work.
-
-## Compiler model
-
-```text
-Issues / PRs / commits / docs
-             │
-             ▼
-       truth evidence
-             │
-             ▼
-      repository truth
-             │
-       admitted only
-             │
-       ┌─────┴─────┐
-       ▼           ▼
- dependencies    tasks
-       └─────┬─────┘
-             ▼
-        eligibility
-       ┌─────┴─────┐
-       ▼           ▼
-     READY       FENCED
-```
-
-The core is deterministic and side-effect free. The GitHub reader is a separate stateless boundary.
-
-## Development
-
-Requires Node.js 22+.
-
-```bash
-npm run ci
-node bin/repo-truth.mjs scan SNE-Labs/repo-truth
-```
-
-## Origin
-
-The compiler was extracted from SNE Labs' internal GitHub-Flow system. See [`ORIGIN.md`](ORIGIN.md) for the exact donor commit and files. The launch is being measured explicitly; see [`docs/experiment.md`](docs/experiment.md), [`docs/t0-launch-protocol.md`](docs/t0-launch-protocol.md), and [`docs/launch-log.md`](docs/launch-log.md).
-
-## Contributing
-
-Contributions are welcome when they preserve the fail-closed contract. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing truth, dependency or eligibility semantics.
-
-Security-sensitive findings should follow [`SECURITY.md`](SECURITY.md) and must not include credentials or private repository content in public issues.
-
-See [`CHANGELOG.md`](CHANGELOG.md) for release history. npm package-name evidence is frozen at [`docs/evidence/npm-package-names-2026-09-30.txt`](docs/evidence/npm-package-names-2026-09-30.txt).
-
-## Status
-
-v0.1 is intentionally conservative. It is a compiler of evidence, not a universal semantic oracle. Expect `UNKNOWN` when a repository does not declare enough truth to automate safely.
-
-MIT licensed.
