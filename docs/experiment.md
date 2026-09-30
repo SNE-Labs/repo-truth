@@ -60,9 +60,24 @@ One bounded scan was run before launch against a public repository not controlle
 - repository: `openai/codex`
 - observed at: 2026-09-30T15:58:27Z
 - command: `node bin/repo-truth.mjs scan openai/codex --limit 25`
-- result: 20 open Issues, 20 `UNKNOWN`, 0 verified agent-ready
+- result inside the bounded observed window: 20 open Issues, 20 `UNKNOWN`, 0 verified agent-ready
 - compiler semantics changed after seeing result: no
 
 The raw terminal output is frozen at [`docs/evidence/openai-codex-2026-09-30.txt`](evidence/openai-codex-2026-09-30.txt).
 
 This result is useful because it demonstrates the zero-config fail-closed boundary: GitHub `OPEN` state alone was not promoted into roadmap truth.
+
+### Coverage correction before T0
+
+The first external scan used `--limit 25`. Its raw output is preserved unchanged as evidence, but the pre-launch review found that the original CLI wording could be read as a repository-total count.
+
+Before distribution T0, repo-truth was changed so bounded scans explicitly report:
+
+- requested observation limit;
+- Issue roots observed;
+- Pull Requests observed;
+- whether each window was truncated.
+
+The historical `20 open issues` line in the frozen artifact therefore means **20 open Issues inside the observed bounded window**, not a claim about the total open-issue count of `openai/codex`.
+
+This correction changes presentation/coverage accounting, not truth, dependency or eligibility semantics.
